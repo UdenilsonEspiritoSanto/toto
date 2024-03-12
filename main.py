@@ -30,11 +30,14 @@ class Todo:
                 ]
             )
         )
+    def set_value(self,e):
+         self.task = e.control.value
     #funcao inserir dados
     def add(self,e,input_task):
          pass
     def main_page(self):
-           input_task = ft.TextField(hint_text="Dgite a Tarefa",expand=True)
+           input_task = ft.TextField(hint_text="Dgite a Tarefa",expand=True,
+                                     on_change=self.set_value)
 
            input_bar = ft.Row(
                 controls=[
