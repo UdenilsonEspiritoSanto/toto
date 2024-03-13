@@ -10,6 +10,9 @@ class Todo:
         self.page.window_always_on_top = True
         self.page.title = 'TodoApp'
         self.db_execute('CREATE TABLE IF NOT EXISTS tasks(name,status)')
+        self.result = self.db_execute('SELECT * FROM  tasks')
+
+        self.task=""
         self.main_page()
     
     def db_execute(self,query,params=[]):
@@ -19,14 +22,20 @@ class Todo:
               con.commit()
               return cur.fetchall()
               
-         
+    def checked(self,e):
+         is_checked = e.control.value
+         label=e.control.label
+             
     def tasks_container(self):
 
         return ft.Container(
             height=self.page.height *0.8,
             content=ft.Column(
                 controls=[
-                    ft.Checkbox(label='Tarefa-1',value=True)
+                    ft.Checkbox(label=res[0], 
+                         on_change = self.checked ,   
+                         value = True if res[1]=='complete' else False)
+                    for res in self.result if res
                 ]
             )
         )
@@ -34,7 +43,20 @@ class Todo:
          self.task = e.control.value
     #funcao inserir dados
     def add(self,e,input_task):
-         pass
+        name = self.task
+        status = "incompleto"
+        if name:
+             self.db_execute(query = 'INSERT INTO tasks VALUES(?,?)',params=[name,status])
+             input_task.value = ""
+             self.result = self.db_execute('SELECT * FROM  tasks')
+             self.update_task_list()
+    
+    def update_task_list(self):
+         tasks =self.tasks_container()
+         self.page.controls.pop()
+         self.page.add(tasks)
+         self.page.update()
+         
     def main_page(self):
            input_task = ft.TextField(hint_text="Dgite a Tarefa",expand=True,
                                      on_change=self.set_value)
