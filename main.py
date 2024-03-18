@@ -42,12 +42,17 @@ class Todo:
         return ft.Container(
             height=self.page.height *0.8,
             content=ft.Column(
+                
                 controls=[
-                    ft.Checkbox(label=res[0], 
+                         
+                         ft.Checkbox(label=res[0], 
                          on_change = self.checked ,   
-                         value = True if res[1]=='complete' else False)
-                    for res in self.result if res
+                         value = True if res[1]=='completo' else False)
+                    
+                         for res in self.result if res
+                   
                 ]
+                         
             )
         )
     def set_value(self,e):
@@ -69,9 +74,16 @@ class Todo:
          self.page.update()
     def tabs_changed(self,e):
          if e.control.selected_index==0:
-              self.result = self.db_execute('SELECTE * FROM tasks')
+              self.result = self.db_execute('SELECT * FROM tasks')
               self.view = 'all'
-         pass     
+         elif e.control.selected_index==1:
+              self.result = self.db_execute('SELECT * FROM tasks WHERE status ="incompleto"')  
+              self.view = 'incompleto' 
+         elif e.control.selected_index==2:
+              self.result = self.db_execute('SELECT * FROM tasks WHERE status = "completo"') 
+              self.view = 'completo'
+         self.update_task_list()   
+
     def main_page(self):
            input_task = ft.TextField(hint_text="Dgite a Tarefa",expand=True,
                                      on_change=self.set_value)
