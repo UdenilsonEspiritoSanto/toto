@@ -3,6 +3,7 @@ import sqlite3
 class Todo:
     def __init__(self,page:ft.Page):
         self.page = page
+        self.page.scroll="adaptive"
         self.page.bgcolor = ft.colors.WHITE
         self.page.window_width=400
         self.page.window_height=450
