@@ -13,6 +13,7 @@ class Todo:
         self.result = self.db_execute('SELECT * FROM  tasks')
 
         self.task=""
+        self.view='all'
         self.main_page()
     
     def db_execute(self,query,params=[]):
@@ -25,7 +26,17 @@ class Todo:
     def checked(self,e):
          is_checked = e.control.value
          label=e.control.label
-             
+         if is_checked:
+              self.db_execute('UPDATE tasks SET status = "completo" WHERE name =?' , params=[label] )
+         else:
+              self.db_execute('UPDATE tasks SET status = "icompleto" WHERE name =?' , params=[label] )
+
+         if self.view=='all':
+              self.result = self.db_execute("SELECT * FROM tasks")  
+         else:
+              self.result = self.db_execute("SELECT * FROM tasks WHERE status = ?",params=[self.view])  
+              self.update_task_list()       
+
     def tasks_container(self):
 
         return ft.Container(
@@ -56,7 +67,11 @@ class Todo:
          self.page.controls.pop()
          self.page.add(tasks)
          self.page.update()
-         
+    def tabs_changed(self,e):
+         if e.control.selected_index==0:
+              self.result = self.db_execute('SELECTE * FROM tasks')
+              self.view = 'all'
+         pass     
     def main_page(self):
            input_task = ft.TextField(hint_text="Dgite a Tarefa",expand=True,
                                      on_change=self.set_value)
@@ -70,6 +85,7 @@ class Todo:
            )
            tab = ft.Tabs(
                selected_index=0,
+               on_change=self.tabs_changed,
                tabs=[
                    ft.Tab(text='Tarefas'),
                    ft.Tab(text='Em Andamento'),
